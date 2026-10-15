@@ -57,3 +57,8 @@ Desktop.ini
 venv/
 __pycache__/
 *.pyc
+
+# Site consolidado (scripts/build-site.sh)
+site/
+site-logs/
+.vercel/
