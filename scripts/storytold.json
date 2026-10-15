@@ -1,0 +1,14 @@
+[
+ ["cadcraft","CADCraft","Desenho técnico 2D/CAD (alternativa a AutoCAD)"],
+ ["deckcraft","DeckCraft","Apresentações (alternativa a PowerPoint)"],
+ ["designcraft","DesignCraft","Diagramação e design gráfico (alternativa a InDesign)"],
+ ["effectcraft","EffectCraft","Motion graphics e efeitos visuais (alternativa a After Effects)"],
+ ["figcraft","FigCraft","Design de interfaces e protótipos (alternativa a Figma)"],
+ ["filmcraft","FilmCraft","Edição de vídeo não linear (alternativa a Premiere)"],
+ ["gridcraft","GridCraft","Planilhas (alternativa a Excel)"],
+ ["lightcraft","LightCraft","Revelação e edição de fotos RAW (alternativa a Lightroom)"],
+ ["photocraft","PhotoCraft","Edição de imagens por camadas, abre PSD (alternativa a Photoshop)"],
+ ["soundcraft","SoundCraft","Edição de áudio (alternativa a Audition)"],
+ ["vectorcraft","VectorCraft","Ilustração vetorial (alternativa a Illustrator)"],
+ ["wordcraft","WordCraft","Processador de texto (alternativa a Word)"]
+]
