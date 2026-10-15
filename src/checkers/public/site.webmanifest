@@ -1,6 +1,6 @@
 {
   "name": "Checkers — Play Online",
-  "short_name": "Checkers",
+  "short_name": "Damas",
   "description": "Play checkers for free. Challenge the computer, pass & play with a friend on one device, or invite a friend to a private online game.",
   "start_url": ".",
   "display": "standalone",
@@ -17,5 +17,6 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "lang": "pt-BR"
 }
