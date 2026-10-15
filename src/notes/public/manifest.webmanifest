@@ -1,6 +1,6 @@
 {
-  "name": "Notes",
-  "short_name": "Notes",
+  "name": "Anotações",
+  "short_name": "Anotações",
   "description": "A free-form digital notebook stored in your own Puter cloud.",
   "start_url": "./",
   "display": "standalone",
@@ -23,5 +23,6 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "lang": "pt-BR"
 }
