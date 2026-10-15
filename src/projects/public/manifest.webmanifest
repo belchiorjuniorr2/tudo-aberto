@@ -1,7 +1,7 @@
 {
-  "name": "Project Management",
-  "short_name": "Projects",
-  "description": "Kanban boards, timelines, and milestones. Lightweight project management on your own Puter cloud.",
+  "name": "Gestão de Projetos",
+  "short_name": "Projetos",
+  "description": "Quadros kanban, cronogramas e marcos. Gestão de projetos leve na sua própria nuvem Puter.",
   "start_url": "./index.html",
   "scope": "./",
   "id": "puter-project-management",
@@ -9,7 +9,9 @@
   "orientation": "any",
   "background_color": "#f8f8f7",
   "theme_color": "#8833eb",
-  "categories": ["productivity"],
+  "categories": [
+    "productivity"
+  ],
   "icons": [
     {
       "src": "./favicon-32.png",
@@ -35,5 +37,6 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "lang": "pt-BR"
 }
