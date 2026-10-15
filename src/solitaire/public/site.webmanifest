@@ -1,6 +1,6 @@
 {
   "name": "Solitaire — Klondike",
-  "short_name": "Solitaire",
+  "short_name": "Paciência",
   "description": "Klondike solitaire, draw-one, undo any move. Real playing-card art on larger screens, plain readable cards on phones. Installs as an app and plays offline.",
   "start_url": ".",
   "display": "standalone",
@@ -25,5 +25,6 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "lang": "pt-BR"
 }
