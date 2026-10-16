@@ -246,12 +246,34 @@ const kv = {
   async clear() { return kv.flush(); },
 };
 
+
+// Recursos que dependem da infraestrutura do Puter (IA, publicação de páginas, workers, multiplayer/chamadas, rede)
+// ficam "indisponíveis por enquanto": qualquer chamada mostra um aviso e rejeita com erro amigável.
+const RECURSOS = { ai: 'Recursos de IA', hosting: 'Publicação de páginas', workers: 'Funções na nuvem', peer: 'Multiplayer online e chamadas de vídeo', net: 'Conexões de rede pelo Puter' };
+function aviso(nome) {
+  if (typeof document === 'undefined' || !document.body) return;
+  let el = document.getElementById('tudo-aberto-indisp');
+  if (!el) { el = document.createElement('div'); el.id = 'tudo-aberto-indisp'; el.setAttribute('role', 'status'); el.setAttribute('data-ptbr-skip', '');
+    el.style.cssText = 'position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:2147483647;max-width:90vw;padding:10px 16px;border-radius:10px;background:#3b2a00;color:#ffe2a8;font:500 14px/1.35 system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.35)';
+    document.body.appendChild(el); }
+  el.textContent = `⚠ ${nome}: indisponível por enquanto no Tudo Aberto.`; el.hidden = false;
+  clearTimeout(aviso.t); aviso.t = setTimeout(() => { el.hidden = true; }, 5000);
+}
+function indisponivel(nome) {
+  const fn = () => { aviso(nome); const e = err('indisponivel', `${nome}: indisponível por enquanto no Tudo Aberto.`); return Promise.reject(e); };
+  return new Proxy(fn, { get: (_t, k) => (k === 'then' || typeof k === 'symbol') ? undefined : (k === 'indisponivel' ? true : indisponivel(nome)), apply: () => fn() });
+}
+
 function patch(p) {
   if (!p || p.tudoAberto) return p;
   for (const [name, impl] of [['auth', auth], ['fs', fs], ['kv', kv]]) {
     let merged = Object.assign(Object.create(p[name] || null), impl);
     // O SDK pode recriar seus submódulos; mantemos sempre a versão Supabase.
     Object.defineProperty(p, name, { configurable: true, get: () => merged, set: (v) => { merged = Object.assign(Object.create(v || null), impl); } });
+  }
+  for (const [name, nome] of Object.entries(RECURSOS)) {
+    const stub = indisponivel(nome);
+    Object.defineProperty(p, name, { configurable: true, get: () => stub, set: () => {} });
   }
   p.isSignedIn = auth.isSignedIn; p.signIn = auth.signIn; p.signOut = auth.signOut; p.getUser = auth.getUser;
   p.supabase = sb; p.tudoAberto = true;
