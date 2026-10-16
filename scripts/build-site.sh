@@ -11,4 +11,5 @@ for app in "${APPS[@]}"; do
     rm -rf "$ROOT/site/$app"; cp -r "$d/dist" "$ROOT/site/$app"; echo "OK $app"
   else echo "FALHOU $app (veja site-logs/$app.log)"; fi
 done
+python3 "$ROOT/scripts/fix-root-paths.py"
 python3 "$ROOT/scripts/inject-supabase.py"

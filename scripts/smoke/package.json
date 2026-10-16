@@ -1,0 +1,1 @@
+{ "name": "tudo-aberto-smoke", "private": true, "type": "module", "dependencies": { "puppeteer-core": "^24" } }
