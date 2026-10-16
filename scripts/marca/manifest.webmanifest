@@ -1,0 +1,17 @@
+{
+  "name": "Tudo Aberto",
+  "short_name": "Tudo Aberto",
+  "description": "Alternativas gratuitas e de código aberto aos softwares do mundo, direto no navegador.",
+  "lang": "pt-BR",
+  "id": "/apps/",
+  "start_url": "/apps/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#101215",
+  "theme_color": "#4f46e5",
+  "icons": [
+    { "src": "/_shared/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/_shared/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/_shared/icone.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
