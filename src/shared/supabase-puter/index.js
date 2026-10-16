@@ -19,6 +19,7 @@ function err(code, message) { const e = new Error(message || code); e.code = cod
 
 function toUser(u) {
   if (!u) return null;
+  if (u.is_anonymous) return { uuid: u.id, id: u.id, username: 'visitante', email: null, email_confirmed: false, is_temp: true };
   const name = u.user_metadata?.username || (u.email || '').split('@')[0];
   return { uuid: u.id, id: u.id, username: name, email: u.email, email_confirmed: !!u.email_confirmed_at, is_temp: false };
 }
@@ -37,6 +38,7 @@ function loginDialog() {
       <input name="senha" type="password" placeholder="Senha (mín. 6 caracteres)" autocomplete="current-password" style="padding:9px;border:1px solid #ccd;border-radius:8px">
       <button name="entrar" style="padding:10px;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:600;cursor:pointer">Entrar</button>
       <button name="criar" type="button" style="padding:9px;border:1px solid #2563eb;border-radius:8px;background:#fff;color:#2563eb;cursor:pointer">Criar conta</button>
+      <button name="visitante" type="button" style="padding:9px;border:1px dashed #5b6470;border-radius:8px;background:#f6f7f9;color:#1a1d21;cursor:pointer">Entrar como visitante (demo)</button>
       <button name="link" type="button" style="padding:6px;border:0;background:none;color:#2563eb;cursor:pointer;text-decoration:underline">Receber link de acesso por e-mail</button>
       <button name="cancelar" type="button" style="padding:6px;border:0;background:none;color:#5b6470;cursor:pointer">Cancelar</button>
       <p name="msg" style="margin:0;min-height:1em;font-size:13px;color:#b42318"></p></form>`;
@@ -62,12 +64,39 @@ function loginDialog() {
       const { error } = await sb.auth.signInWithOtp({ email: email(), options: { emailRedirectTo: location.href } });
       say(error ? error.message : 'Link enviado! Abra seu e-mail para entrar.', !error);
     };
+    f.visitante.onclick = async () => {
+      const { data, error } = await sb.auth.signInAnonymously();
+      if (error) return say(error.message);
+      session = data.session; demoBadge(); done(toUser(data.user));
+    };
     f.cancelar.onclick = () => { w.remove(); pending = null; reject(err('aborted', 'Login cancelado')); };
     (document.body || document.documentElement).appendChild(w);
     f.email.focus();
   });
   return pending;
 }
+
+// ---------- modo demo (usuário anônimo) ----------
+function demoBadge() {
+  if (!session?.user?.is_anonymous || document.getElementById('tudo-aberto-demo')) return;
+  const b = document.createElement('div');
+  b.id = 'tudo-aberto-demo';
+  b.setAttribute('style', 'position:fixed;left:10px;bottom:10px;z-index:2147483646;background:#fff8e6;color:#7a4b00;border:1px solid #f0d08a;border-radius:8px;padding:6px 10px;font:12px system-ui,sans-serif;box-shadow:0 2px 8px #0002;display:flex;gap:8px;align-items:center');
+  b.innerHTML = 'Modo demo: dados temporários <button style="border:0;background:none;color:#2563eb;cursor:pointer;text-decoration:underline;font:inherit;padding:0">Criar conta</button><button title="Fechar" style="border:0;background:none;cursor:pointer;color:#7a4b00;font:inherit;padding:0">×</button>';
+  const [criar, fechar] = b.querySelectorAll('button');
+  fechar.onclick = () => b.remove();
+  criar.onclick = async () => {
+    const email = prompt('Seu e-mail para guardar os dados desta demo numa conta:');
+    if (!email) return;
+    // Converte o visitante em conta permanente, mantendo o mesmo user_id (e os dados).
+    const r1 = await sb.auth.updateUser({ email }, { emailRedirectTo: location.href });
+    if (r1.error) return alert('Não foi possível: ' + r1.error.message);
+    alert('Enviamos um link de confirmação para ' + email + '. Ao confirmar, a conta passa a ser sua e os dados desta demo ficam guardados. Para entrar depois, use "Receber link de acesso por e-mail".');
+  };
+  (document.body || document.documentElement).appendChild(b);
+}
+sb.auth.onAuthStateChange(() => setTimeout(() => { if (session?.user?.is_anonymous) demoBadge(); else document.getElementById('tudo-aberto-demo')?.remove(); }));
+if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded', () => demoBadge());
 
 const auth = {
   isSignedIn: () => !!session,
