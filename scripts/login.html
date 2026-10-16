@@ -1,0 +1,46 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tudo Aberto — Entrar</title><meta name="description" content="Alternativas gratuitas e de código aberto aos softwares do mundo, direto no navegador.">
+<script>try{var s=JSON.parse(localStorage.getItem('sb-ylqmxsfdtvfygbccjvgk-auth-token'));if(s&&s.user&&!/[#&]error/.test(location.hash))location.replace('/apps/');}catch(e){}</script>
+<link rel="preload" as="image" href="/_shared/login-bg.webp">
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff;background:#0d1020 url(/_shared/login-bg.jpg) center/cover no-repeat fixed;background-image:image-set(url(/_shared/login-bg.webp) type("image/webp"),url(/_shared/login-bg.jpg) type("image/jpeg"));display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.card{width:min(400px,100%);padding:32px 28px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:6px}.logo svg{flex:none}
+h1{margin:0;font-size:1.8rem;letter-spacing:-.02em}p.sub{margin:4px 0 22px;color:rgba(255,255,255,.82);font-size:.95rem}
+label{display:block;font-size:.8rem;margin:0 0 4px;color:rgba(255,255,255,.85)}
+input{width:100%;padding:12px 14px;margin-bottom:12px;border-radius:10px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:#fff;font-size:1rem;outline:none}
+input::placeholder{color:rgba(255,255,255,.6)}input:focus{border-color:#fff;background:rgba(255,255,255,.2)}
+button{width:100%;padding:12px;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;margin-top:8px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.08);color:#fff}
+button.primary{background:#fff;color:#1d2140;border-color:#fff}button.link{border:0;background:none;font-weight:500;text-decoration:underline;padding:8px}
+button.demo{border-style:dashed}button:disabled{opacity:.6;cursor:wait}
+.row{display:flex;gap:8px}.row button{flex:1}
+#msg{min-height:1.3em;margin:12px 0 0;font-size:.9rem;text-align:center}#msg.err{color:#ffd1d1}#msg.ok{color:#c9ffd9}
+footer{position:fixed;bottom:10px;left:0;right:0;text-align:center;font-size:.75rem;color:rgba(255,255,255,.75)}footer a{color:inherit}
+@media(max-width:480px){.card{padding:24px 18px}h1{font-size:1.5rem}footer{position:static;margin-top:14px}body{flex-direction:column}}
+</style></head><body>
+<form class="card" id="f" autocomplete="on">
+  <div class="logo"><svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><rect width="44" height="44" rx="12" fill="#fff" fill-opacity=".9"/><path d="M13 30V14h18M22 14v16" stroke="#3b3fb6" stroke-width="4" stroke-linecap="round" fill="none"/></svg><h1>Tudo Aberto</h1></div>
+  <p class="sub">Os softwares do mundo, abertos e gratuitos, direto no navegador.</p>
+  <label for="email">E-mail</label><input id="email" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required>
+  <label for="senha">Senha</label><input id="senha" name="senha" type="password" placeholder="Mínimo de 6 caracteres" autocomplete="current-password">
+  <button class="primary" type="submit" id="entrar">Entrar</button>
+  <div class="row"><button type="button" id="criar">Criar conta</button><button type="button" id="link">Receber link por e-mail</button></div>
+  <button type="button" class="demo" id="demo">Entrar como visitante (demo)</button>
+  <p id="msg" role="status"></p>
+</form>
+<footer>Fork em português de <a href="https://github.com/HeyPuter/everything">HeyPuter/everything</a> (MIT) · <a href="https://github.com/belchiorjuniorr2/tudo-aberto">Código</a> · <a href="/apps/">Ver os apps</a></footer>
+<script src="/_shared/supabase-puter.js"></script>
+<script>
+const sb=window.tudoAbertoSupabase, $=id=>document.getElementById(id), msg=$('msg');
+const say=(t,ok)=>{msg.textContent=t;msg.className=ok?'ok':'err'};
+const go=()=>location.replace('/apps/');
+const busy=b=>document.querySelectorAll('button').forEach(x=>x.disabled=b);
+const tr=m=>/Invalid login/.test(m)?'E-mail ou senha incorretos.':/not confirmed/i.test(m)?'Confirme seu e-mail antes de entrar.':/rate limit/i.test(m)?'Muitas tentativas. Aguarde alguns minutos.':/already registered/i.test(m)?'Este e-mail já tem conta. Use Entrar.':m;
+sb.auth.getSession().then(({data})=>{if(data.session)go()});
+sb.auth.onAuthStateChange((e,s)=>{if(s&&e==='SIGNED_IN')go()});
+$('f').onsubmit=async e=>{e.preventDefault();busy(true);const{error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('senha').value});busy(false);if(error)say(tr(error.message));else go()};
+$('criar').onclick=async()=>{const email=$('email').value.trim(),password=$('senha').value;if(!email||password.length<6)return say('Informe e-mail e uma senha com 6 ou mais caracteres.');busy(true);const{data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+'/apps/'}});busy(false);if(error)return say(tr(error.message));if(data.session)return go();say('Conta criada! Confirme pelo link enviado ao seu e-mail.',true)};
+$('link').onclick=async()=>{const email=$('email').value.trim();if(!email)return say('Informe seu e-mail.');busy(true);const{error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+'/apps/'}});busy(false);say(error?tr(error.message):'Link enviado! Abra seu e-mail para entrar.',!error)};
+$('demo').onclick=async()=>{busy(true);const{error}=await sb.auth.signInAnonymously();busy(false);if(error)say(tr(error.message));else go()};
+</script></body></html>

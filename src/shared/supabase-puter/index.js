@@ -265,4 +265,5 @@ try {
 } catch { current = patch(globalThis.puter || {}); }
 // Se o SDK do Puter não carregar, os apps ainda têm auth/fs/kv.
 window.addEventListener('load', () => setTimeout(() => { if (!current) current = patch({ env: 'web' }); }, 3000));
+globalThis.tudoAbertoSupabase = sb;
 export { sb, auth, fs, kv };
