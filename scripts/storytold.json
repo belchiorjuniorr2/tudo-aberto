@@ -1,14 +1,14 @@
 [
- ["cadcraft","CADCraft","Desenho técnico 2D/CAD (alternativa a AutoCAD)"],
- ["deckcraft","DeckCraft","Apresentações (alternativa a PowerPoint)"],
- ["designcraft","DesignCraft","Diagramação e design gráfico (alternativa a InDesign)"],
- ["effectcraft","EffectCraft","Motion graphics e efeitos visuais (alternativa a After Effects)"],
- ["figcraft","FigCraft","Design de interfaces e protótipos (alternativa a Figma)"],
- ["filmcraft","FilmCraft","Edição de vídeo não linear (alternativa a Premiere)"],
- ["gridcraft","GridCraft","Planilhas (alternativa a Excel)"],
- ["lightcraft","LightCraft","Revelação e edição de fotos RAW (alternativa a Lightroom)"],
- ["photocraft","PhotoCraft","Edição de imagens por camadas, abre PSD (alternativa a Photoshop)"],
- ["soundcraft","SoundCraft","Edição de áudio (alternativa a Audition)"],
- ["vectorcraft","VectorCraft","Ilustração vetorial (alternativa a Illustrator)"],
- ["wordcraft","WordCraft","Processador de texto (alternativa a Word)"]
+ ["cadcraft","Desenho Técnico CAD","CADCraft","Desenho 2D preciso, camadas, cotas e DXF (alternativa ao AutoCAD)"],
+ ["deckcraft","Criador de Apresentações","DeckCraft","Slides com temas, animações e .pptx (alternativa ao PowerPoint)"],
+ ["designcraft","Diagramação","DesignCraft","Layout de páginas para revistas, livros e folhetos (alternativa ao InDesign)"],
+ ["effectcraft","Efeitos Visuais","EffectCraft","Motion graphics, títulos animados e composição (alternativa ao After Effects)"],
+ ["figcraft","Design de Interfaces","FigCraft","Telas, componentes e protótipos interativos (alternativa ao Figma)"],
+ ["filmcraft","Editor de Filmes","FilmCraft","Edição de vídeo não linear com linha do tempo (alternativa ao Premiere)"],
+ ["gridcraft","Planilhas Avançadas","GridCraft","Planilhas com fórmulas, gráficos e .xlsx (alternativa ao Excel)"],
+ ["lightcraft","Revelação de Fotos","LightCraft","Edição não destrutiva de fotos RAW (alternativa ao Lightroom)"],
+ ["photocraft","Editor de Imagens","PhotoCraft","Camadas, máscaras, filtros e arquivos PSD (alternativa ao Photoshop)"],
+ ["soundcraft","Editor de Áudio","SoundCraft","Gravação, edição e efeitos de áudio (alternativa ao Audition)"],
+ ["vectorcraft","Ilustração Vetorial","VectorCraft","Caneta, formas, degradês e SVG/PDF (alternativa ao Illustrator)"],
+ ["wordcraft","Processador de Texto","WordCraft","Documentos com estilos, revisão e .docx (alternativa ao Word)"]
 ]
