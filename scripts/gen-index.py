@@ -26,11 +26,21 @@ st=[x for x in json.load(open(os.path.join(ROOT,'scripts','storytold.json'))) if
 if st:
     os.makedirs(os.path.join(ROOT,'site','_icons'),exist_ok=True)
     cards=''
+    def tamanho(a):
+        t=0
+        for dp,_,fs in os.walk(os.path.join(ROOT,'site',a)):
+            for f in fs:
+                q=os.path.join(dp,f)
+                if f.endswith('.wasm'):
+                    import gzip; t+=len(gzip.compress(open(q,'rb').read(),6))
+                elif '.part-' in f: t+=os.path.getsize(q)
+        return t
     for a,n,orig,d in st:
+        mb=round(tamanho(a)/1e6)
         ic=os.path.join(ROOT,'scripts','storytold-icons',f'{a}-icon.png')
         if os.path.exists(ic): shutil.copy(ic,os.path.join(ROOT,'site','_icons',f'{a}-icon.png')); img=f'<img src="/_icons/{a}-icon.png" alt="">'
         else: img=f'<svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="10" fill="#4f46e5"/><text x="24" y="31" font-size="22" text-anchor="middle" fill="#fff" font-family="system-ui">{n[0]}</text></svg>'
-        cards+=f'<a class="card gpu" href="/{a}/">{img}<div><b>{n} <sub class="orig">({orig})</sub></b><small>{d}</small><span class="gpu-tag">Requer WebGPU</span></div></a>'
+        cards+=f'<a class="card gpu" href="/{a}/">{img}<div><b>{n} <sub class="orig">({orig})</sub></b><small>{d}</small><span class="gpu-tag">Requer WebGPU</span> <span class="gpu-tag peso" title="Tamanho aproximado do primeiro download; depois fica em cache">≈ {mb} MB para baixar</span></div></a>'
     out.append('<h2>Da Storytold</h2><p class="sec-note">Apps de código aberto da <a href="https://github.com/storytold">Storytold</a> (ArtCraft), compilados para o navegador a partir do código original, sob licença Apache-2.0 / MIT (licenças incluídas em cada app). Interfaces em inglês. Funcionam melhor no Chrome ou Edge atualizado no computador.</p><div class="grid">'+cards+'</div>')
 page=f'''<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tudo Aberto — apps de código aberto no navegador</title><meta name="description" content="Alternativas gratuitas e de código aberto aos softwares do mundo, direto no navegador.">
@@ -43,4 +53,5 @@ os.makedirs(os.path.join(ROOT,'site','_shared'),exist_ok=True)
 for f in ('login-bg.webp','login-bg.jpg'): shutil.copy(os.path.join(ROOT,'scripts',f),os.path.join(ROOT,'site','_shared',f))
 shutil.copy(os.path.join(ROOT,'scripts','apps-home.js'),os.path.join(ROOT,'site','apps','home.js'))
 shutil.copy(os.path.join(ROOT,'scripts','login.html'),os.path.join(ROOT,'site','index.html'))
+shutil.copy(os.path.join(ROOT,'scripts','vercel.json'),os.path.join(ROOT,'site','vercel.json'))
 print('apps na home:',page.count('class="card"'))
