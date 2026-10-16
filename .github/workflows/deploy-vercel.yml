@@ -1,0 +1,41 @@
+# Build e deploy do site no Vercel.
+# DESATIVADO até existir o segredo VERCEL_TOKEN no repositório (Settings → Secrets and variables → Actions).
+# Para ativar automaticamente a cada push na main, descomente o bloco "push" abaixo.
+#
+# Os apps da Storytold (WASM/Rust) não são compilados aqui: o job baixa o pacote pronto
+# "storytold-site.tar.gz" do release "storytold-builds" do repositório (crie com scripts/pack-storytold.sh).
+# Se o pacote não existir, o deploy é abortado para não publicar um site sem esses 12 apps.
+name: Deploy no Vercel
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+concurrency: { group: vercel-prod, cancel-in-progress: false }
+env:
+  VERCEL_ORG_ID: team_zEJVPcGtJsLXMFYQJdsh0viT
+  VERCEL_PROJECT_ID: prj_TtORLpRgKN7xVWxNidJ4A3nMq7mv
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Verificar segredo
+        env: { VERCEL_TOKEN: "${{ secrets.VERCEL_TOKEN }}" }
+        run: '[ -n "$VERCEL_TOKEN" ] || { echo "::error::Segredo VERCEL_TOKEN ausente; crie em vercel.com/account/tokens e adicione ao repositório."; exit 1; }'
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Build dos apps (Vite) + home + adaptador Supabase
+        run: bash scripts/build-site.sh && python3 scripts/gen-index.py
+      - name: Apps da Storytold (pacote pronto)
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          gh release download storytold-builds -p storytold-site.tar.gz -D /tmp || { echo "::error::Release storytold-builds/storytold-site.tar.gz não encontrado"; exit 1; }
+          tar -xzf /tmp/storytold-site.tar.gz -C site
+          python3 scripts/fix-root-paths.py && python3 scripts/inject-supabase.py && python3 scripts/gen-index.py
+          for a in $(python3 -c "import json;print(' '.join(x[0] for x in json.load(open('scripts/storytold.json'))))"); do [ -f site/$a/index.html ] || { echo "::error::falta site/$a"; exit 1; }; done
+      - name: Deploy
+        env: { VERCEL_TOKEN: "${{ secrets.VERCEL_TOKEN }}" }
+        run: cd site && npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
+      - name: Teste de fumaça
+        run: cd scripts/smoke && npm i --no-audit --no-fund && sleep 30 && CHROME=$(which google-chrome) node smoke.mjs https://tudo-aberto.vercel.app
