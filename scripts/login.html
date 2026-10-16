@@ -51,10 +51,10 @@ const tr=m=>/Invalid login/.test(m)?'E-mail ou senha incorretos.':/rate limit/i.
 function aba(criar){$('tab-criar').setAttribute('aria-selected',criar);$('tab-entrar').setAttribute('aria-selected',!criar);$('f-criar').hidden=!criar;$('f-entrar').hidden=criar;say('');(criar?$('n2'):$('e1')).focus()}
 $('tab-entrar').onclick=()=>aba(false);$('tab-criar').onclick=()=>aba(true);if(location.hash==='#criar')aba(true);
 sb.auth.getSession().then(({data})=>{if(data.session)go()});
-$('f-entrar').onsubmit=async e=>{e.preventDefault();busy(true);const{error}=await sb.auth.signInWithPassword({email:$('e1').value.trim(),password:$('s1').value});busy(false);if(error)say(tr(error.message));else go()};
+$('f-entrar').onsubmit=async e=>{e.preventDefault();busy(true);const{error}=await sb.auth.signInWithPassword({email:$('e1').value.trim(),password:$('s1').value,options:{captchaToken:await window.tudoAbertoCaptcha()}});busy(false);if(error)say(tr(error.message));else go()};
 $('f-criar').onsubmit=async e=>{e.preventDefault();const email=$('e2').value.trim(),p=$('s2').value,c=$('c2').value,nome=$('n2').value.trim();
   if(p.length<6)return say('A senha precisa ter pelo menos 6 caracteres.');if(p!==c)return say('As senhas não conferem.');
-  busy(true);const{data,error}=await sb.auth.signUp({email,password:p,options:{data:nome?{username:nome,full_name:nome}:{}}});busy(false);
+  busy(true);const{data,error}=await sb.auth.signUp({email,password:p,options:{captchaToken:await window.tudoAbertoCaptcha(),data:nome?{username:nome,full_name:nome}:{}}});busy(false);
   if(error)return say(tr(error.message));if(data.session)return go();say('Conta criada! Agora entre com seu e-mail e senha.',true);aba(false);$('e1').value=email};
-$('demo').onclick=async()=>{busy(true);const{error}=await sb.auth.signInAnonymously();busy(false);if(error)say(tr(error.message));else go()};
+$('demo').onclick=async()=>{busy(true);const{error}=await sb.auth.signInAnonymously({options:{captchaToken:await window.tudoAbertoCaptcha()}});busy(false);if(error)say(tr(error.message));else go()};
 </script></body></html>

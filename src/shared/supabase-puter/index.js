@@ -2,6 +2,7 @@
 // Os demais módulos do Puter (ai, workers, peer, hosting, ui, perms, net) continuam vindo do SDK original.
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY, BUCKET } from './config.js';
+import { captchaToken } from './captcha.js';
 
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
 const STORAGE_KEY = `sb-${new URL(SUPABASE_URL).hostname.split('.')[0]}-auth-token`;
@@ -47,19 +48,19 @@ function loginDialog() {
     const email = () => f.email.value.trim(), senha = () => f.senha.value;
     f.addEventListener('submit', async (ev) => {
       ev.preventDefault();
-      const { data, error } = await sb.auth.signInWithPassword({ email: email(), password: senha() });
+      const { data, error } = await sb.auth.signInWithPassword({ email: email(), password: senha(), options: { captchaToken: await captchaToken() } });
       if (error) return say(error.message === 'Invalid login credentials' ? 'E-mail ou senha incorretos.' : error.message.includes('not confirmed') ? 'Confirme seu e-mail antes de entrar.' : error.message);
       session = data.session; done(toUser(data.user));
     });
     f.criar.onclick = async () => {
       if (!email() || senha().length < 6) return say('Informe e-mail e uma senha com 6+ caracteres.');
-      const { data, error } = await sb.auth.signUp({ email: email(), password: senha(), });
+      const { data, error } = await sb.auth.signUp({ email: email(), password: senha(), options: { captchaToken: await captchaToken() } });
       if (error) return say(/rate limit/i.test(error.message) ? 'Muitas tentativas. Aguarde alguns minutos.' : /already registered/i.test(error.message) ? 'Este e-mail já tem conta. Use Entrar.' : error.message);
       if (data.session) { session = data.session; return done(toUser(data.user)); }
       say('Conta criada! Confirme pelo link enviado ao seu e-mail e depois entre.', true);
     };
     f.visitante.onclick = async () => {
-      const { data, error } = await sb.auth.signInAnonymously();
+      const { data, error } = await sb.auth.signInAnonymously({ options: { captchaToken: await captchaToken() } });
       if (error) return say(error.message);
       session = data.session; demoBadge(); done(toUser(data.user));
     };
@@ -263,5 +264,5 @@ try {
 } catch { current = patch(globalThis.puter || {}); }
 // Se o SDK do Puter não carregar, os apps ainda têm auth/fs/kv.
 window.addEventListener('load', () => setTimeout(() => { if (!current) current = patch({ env: 'web' }); }, 3000));
-globalThis.tudoAbertoSupabase = sb;
+globalThis.tudoAbertoCaptcha = captchaToken; globalThis.tudoAbertoSupabase = sb;
 export { sb, auth, fs, kv };
