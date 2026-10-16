@@ -39,7 +39,6 @@ function loginDialog() {
       <button name="entrar" style="padding:10px;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:600;cursor:pointer">Entrar</button>
       <button name="criar" type="button" style="padding:9px;border:1px solid #2563eb;border-radius:8px;background:#fff;color:#2563eb;cursor:pointer">Criar conta</button>
       <button name="visitante" type="button" style="padding:9px;border:1px dashed #5b6470;border-radius:8px;background:#f6f7f9;color:#1a1d21;cursor:pointer">Entrar como visitante (demo)</button>
-      <button name="link" type="button" style="padding:6px;border:0;background:none;color:#2563eb;cursor:pointer;text-decoration:underline">Receber link de acesso por e-mail</button>
       <button name="cancelar" type="button" style="padding:6px;border:0;background:none;color:#5b6470;cursor:pointer">Cancelar</button>
       <p name="msg" style="margin:0;min-height:1em;font-size:13px;color:#b42318"></p></form>`;
     const f = w.firstElementChild, msg = f.querySelector('[name=msg]');
@@ -54,15 +53,10 @@ function loginDialog() {
     });
     f.criar.onclick = async () => {
       if (!email() || senha().length < 6) return say('Informe e-mail e uma senha com 6+ caracteres.');
-      const { data, error } = await sb.auth.signUp({ email: email(), password: senha(), options: { emailRedirectTo: location.href } });
-      if (error) return say(error.message);
+      const { data, error } = await sb.auth.signUp({ email: email(), password: senha(), });
+      if (error) return say(/rate limit/i.test(error.message) ? 'Muitas tentativas. Aguarde alguns minutos.' : /already registered/i.test(error.message) ? 'Este e-mail já tem conta. Use Entrar.' : error.message);
       if (data.session) { session = data.session; return done(toUser(data.user)); }
       say('Conta criada! Confirme pelo link enviado ao seu e-mail e depois entre.', true);
-    };
-    f.link.onclick = async () => {
-      if (!email()) return say('Informe seu e-mail.');
-      const { error } = await sb.auth.signInWithOtp({ email: email(), options: { emailRedirectTo: location.href } });
-      say(error ? error.message : 'Link enviado! Abra seu e-mail para entrar.', !error);
     };
     f.visitante.onclick = async () => {
       const { data, error } = await sb.auth.signInAnonymously();
@@ -88,10 +82,14 @@ function demoBadge() {
   criar.onclick = async () => {
     const email = prompt('Seu e-mail para guardar os dados desta demo numa conta:');
     if (!email) return;
-    // Converte o visitante em conta permanente, mantendo o mesmo user_id (e os dados).
-    const r1 = await sb.auth.updateUser({ email }, { emailRedirectTo: location.href });
-    if (r1.error) return alert('Não foi possível: ' + r1.error.message);
-    alert('Enviamos um link de confirmação para ' + email + '. Ao confirmar, a conta passa a ser sua e os dados desta demo ficam guardados. Para entrar depois, use "Receber link de acesso por e-mail".');
+    const password = prompt('Escolha uma senha (mínimo de 6 caracteres):');
+    if (!password) return;
+    if (password.length < 6) return alert('A senha precisa ter pelo menos 6 caracteres.');
+    // Converte o visitante em conta permanente com o mesmo user_id (os dados da demo continuam).
+    const { error } = await sb.auth.updateUser({ email: email.trim(), password });
+    if (error) return alert('Não foi possível criar a conta: ' + (/already/i.test(error.message) ? 'este e-mail já tem conta.' : error.message));
+    alert('Conta criada! Entre com ' + email.trim() + ' e sua senha nas próximas vezes.');
+    b.remove();
   };
   (document.body || document.documentElement).appendChild(b);
 }

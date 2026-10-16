@@ -14,33 +14,47 @@ input::placeholder{color:rgba(255,255,255,.6)}input:focus{border-color:#fff;back
 button{width:100%;padding:12px;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;margin-top:8px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.08);color:#fff}
 button.primary{background:#fff;color:#1d2140;border-color:#fff}button.link{border:0;background:none;font-weight:500;text-decoration:underline;padding:8px}
 button.demo{border-style:dashed}button:disabled{opacity:.6;cursor:wait}
-.row{display:flex;gap:8px}.row button{flex:1}
+.tabs{display:flex;gap:4px;padding:4px;margin-bottom:16px;border-radius:12px;background:rgba(0,0,0,.2)}.tabs button{margin:0;flex:1;border:0;background:none;padding:9px;font-weight:600;color:rgba(255,255,255,.8)}.tabs button[aria-selected=true]{background:rgba(255,255,255,.95);color:#1d2140}.opt{opacity:.7;font-weight:400}.ou{display:flex;align-items:center;gap:10px;margin:18px 0 6px;color:rgba(255,255,255,.7);font-size:.85rem}.ou:before,.ou:after{content:'';flex:1;height:1px;background:rgba(255,255,255,.3)}.hint{margin:6px 0 0;text-align:center;font-size:.8rem;color:rgba(255,255,255,.72)}
 #msg{min-height:1.3em;margin:12px 0 0;font-size:.9rem;text-align:center}#msg.err{color:#ffd1d1}#msg.ok{color:#c9ffd9}
 footer{position:fixed;bottom:10px;left:0;right:0;text-align:center;font-size:.75rem;color:rgba(255,255,255,.75)}footer a{color:inherit}
 @media(max-width:480px){.card{padding:24px 18px}h1{font-size:1.5rem}footer{position:static;margin-top:14px}body{flex-direction:column}}
 </style></head><body>
-<form class="card" id="f" autocomplete="on">
+<div class="card">
   <div class="logo"><svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><rect width="44" height="44" rx="12" fill="#fff" fill-opacity=".9"/><path d="M13 30V14h18M22 14v16" stroke="#3b3fb6" stroke-width="4" stroke-linecap="round" fill="none"/></svg><h1>Tudo Aberto</h1></div>
   <p class="sub">Os softwares do mundo, abertos e gratuitos, direto no navegador.</p>
-  <label for="email">E-mail</label><input id="email" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required>
-  <label for="senha">Senha</label><input id="senha" name="senha" type="password" placeholder="Mínimo de 6 caracteres" autocomplete="current-password">
-  <button class="primary" type="submit" id="entrar">Entrar</button>
-  <div class="row"><button type="button" id="criar">Criar conta</button><button type="button" id="link">Receber link por e-mail</button></div>
+  <div class="tabs" role="tablist"><button type="button" role="tab" id="tab-entrar" aria-selected="true">Entrar</button><button type="button" role="tab" id="tab-criar" aria-selected="false">Criar conta</button></div>
+  <form id="f-entrar" autocomplete="on">
+    <label for="e1">E-mail</label><input id="e1" type="email" placeholder="voce@exemplo.com" autocomplete="email" required>
+    <label for="s1">Senha</label><input id="s1" type="password" placeholder="Sua senha" autocomplete="current-password" required>
+    <button class="primary" type="submit">Entrar</button>
+  </form>
+  <form id="f-criar" autocomplete="on" hidden>
+    <label for="n2">Nome <span class="opt">(opcional)</span></label><input id="n2" type="text" placeholder="Como quer ser chamado" autocomplete="name">
+    <label for="e2">E-mail</label><input id="e2" type="email" placeholder="voce@exemplo.com" autocomplete="email" required>
+    <label for="s2">Senha</label><input id="s2" type="password" placeholder="Mínimo de 6 caracteres" autocomplete="new-password" minlength="6" required>
+    <label for="c2">Confirmar senha</label><input id="c2" type="password" placeholder="Repita a senha" autocomplete="new-password" minlength="6" required>
+    <button class="primary" type="submit">Criar conta e entrar</button>
+  </form>
+  <div class="ou"><span>ou</span></div>
   <button type="button" class="demo" id="demo">Entrar como visitante (demo)</button>
+  <p class="hint">Sem cadastro: dados temporários, só para testar.</p>
   <p id="msg" role="status"></p>
-</form>
+</div>
 <footer>Fork em português de <a href="https://github.com/HeyPuter/everything">HeyPuter/everything</a> (MIT) · <a href="https://github.com/belchiorjuniorr2/tudo-aberto">Código</a> · <a href="/apps/">Ver os apps</a><br><span style="opacity:.8">Interface desenvolvida por José Belchior</span></footer>
 <script src="/_shared/supabase-puter.js"></script>
 <script>
 const sb=window.tudoAbertoSupabase, $=id=>document.getElementById(id), msg=$('msg');
 const say=(t,ok)=>{msg.textContent=t;msg.className=ok?'ok':'err'};
 const go=()=>location.replace('/apps/');
-const busy=b=>document.querySelectorAll('button').forEach(x=>x.disabled=b);
-const tr=m=>/Invalid login/.test(m)?'E-mail ou senha incorretos.':/not confirmed/i.test(m)?'Confirme seu e-mail antes de entrar.':/rate limit/i.test(m)?'Muitas tentativas. Aguarde alguns minutos.':/already registered/i.test(m)?'Este e-mail já tem conta. Use Entrar.':m;
+const busy=b=>document.querySelectorAll('button,input').forEach(x=>x.disabled=b);
+const tr=m=>/Invalid login/.test(m)?'E-mail ou senha incorretos.':/rate limit/i.test(m)?'Muitas tentativas. Aguarde alguns minutos e tente de novo.':/already registered|already been registered/i.test(m)?'Este e-mail já tem conta. Use a aba Entrar.':/invalid/i.test(m)&&/email/i.test(m)?'E-mail inválido.':/Password should be/i.test(m)?'A senha precisa ter pelo menos 6 caracteres.':m;
+function aba(criar){$('tab-criar').setAttribute('aria-selected',criar);$('tab-entrar').setAttribute('aria-selected',!criar);$('f-criar').hidden=!criar;$('f-entrar').hidden=criar;say('');(criar?$('n2'):$('e1')).focus()}
+$('tab-entrar').onclick=()=>aba(false);$('tab-criar').onclick=()=>aba(true);if(location.hash==='#criar')aba(true);
 sb.auth.getSession().then(({data})=>{if(data.session)go()});
-sb.auth.onAuthStateChange((e,s)=>{if(s&&e==='SIGNED_IN')go()});
-$('f').onsubmit=async e=>{e.preventDefault();busy(true);const{error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('senha').value});busy(false);if(error)say(tr(error.message));else go()};
-$('criar').onclick=async()=>{const email=$('email').value.trim(),password=$('senha').value;if(!email||password.length<6)return say('Informe e-mail e uma senha com 6 ou mais caracteres.');busy(true);const{data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+'/apps/'}});busy(false);if(error)return say(tr(error.message));if(data.session)return go();say('Conta criada! Confirme pelo link enviado ao seu e-mail.',true)};
-$('link').onclick=async()=>{const email=$('email').value.trim();if(!email)return say('Informe seu e-mail.');busy(true);const{error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+'/apps/'}});busy(false);say(error?tr(error.message):'Link enviado! Abra seu e-mail para entrar.',!error)};
+$('f-entrar').onsubmit=async e=>{e.preventDefault();busy(true);const{error}=await sb.auth.signInWithPassword({email:$('e1').value.trim(),password:$('s1').value});busy(false);if(error)say(tr(error.message));else go()};
+$('f-criar').onsubmit=async e=>{e.preventDefault();const email=$('e2').value.trim(),p=$('s2').value,c=$('c2').value,nome=$('n2').value.trim();
+  if(p.length<6)return say('A senha precisa ter pelo menos 6 caracteres.');if(p!==c)return say('As senhas não conferem.');
+  busy(true);const{data,error}=await sb.auth.signUp({email,password:p,options:{data:nome?{username:nome,full_name:nome}:{}}});busy(false);
+  if(error)return say(tr(error.message));if(data.session)return go();say('Conta criada! Agora entre com seu e-mail e senha.',true);aba(false);$('e1').value=email};
 $('demo').onclick=async()=>{busy(true);const{error}=await sb.auth.signInAnonymously();busy(false);if(error)say(tr(error.message));else go()};
 </script></body></html>
