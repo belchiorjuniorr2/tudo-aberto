@@ -1,0 +1,32 @@
+{
+  "name": "tudo-aberto-portavel",
+  "productName": "Tudo Aberto",
+  "version": "1.0.0",
+  "description": "Tudo Aberto — versão portátil para Windows (sem instalação)",
+  "author": "José Belchior",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "prepare-site": "rm -rf app-site && cp -r ../../site app-site",
+    "dist": "npm run prepare-site && electron-builder --win portable --x64"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.belchiorjuniorr2.tudoaberto",
+    "productName": "Tudo Aberto",
+    "copyright": "MIT — fork traduzido de HeyPuter/everything",
+    "directories": { "output": "dist" },
+    "files": ["main.js", "package.json", "build/icon.png"],
+    "extraResources": [
+      { "from": "app-site", "to": "site" },
+      { "from": "build/LICENSE", "to": "LICENSE" },
+      { "from": "build/NOTICE.md", "to": "NOTICE.md" }
+    ],
+    "asar": true,
+    "win": { "target": [{ "target": "portable", "arch": ["x64"] }], "icon": "build/icon.png" },
+    "portable": { "artifactName": "TudoAberto-Portatil-${version}-x64.exe" }
+  }
+}
