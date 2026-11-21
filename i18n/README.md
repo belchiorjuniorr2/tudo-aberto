@@ -8,3 +8,7 @@ editável do usuário (contenteditable, inputs, editores, células de grade).
 Gerar o dicionário de um app: `python3 i18n/extract.py <app>` (extrai strings) e `python i18n/translate.py <app>`
 (tradução automática offline com Argos Translate en→pt + correções pt-PT→pt-BR e filtros de qualidade). Correções manuais: edite o JSON.
 `scripts/inject-supabase.py` injeta o tradutor nos apps que têm dicionário.
+
+**ArtCraft** (`src/artcraft`, app de computador): o dicionário `i18n/apps/artcraft.json` foi revisado à mão e é embutido no app
+por `python3 scripts/artcraft-i18n.py` (gera `src/artcraft/frontend/apps/artcraft/app/src/i18n-ptbr/ptbr-dicionario.json`,
+lido pelo tradutor `ptbr.ts`, versão em TypeScript do `ptbr.js`).

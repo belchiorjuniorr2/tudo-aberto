@@ -21,6 +21,8 @@ npm install
 npm run dev
 ```
 
+O **ArtCraft** (`src/artcraft`) é diferente: é um app de computador (Rust/Tauri) da [Storytold](https://github.com/storytold/artcraft), sob licença MIT ou Apache-2.0, com a interface traduzida para pt-BR. Ele não roda no site; veja como compilar em [src/artcraft/README.md](src/artcraft/README.md).
+
 Os apps usam o SDK do [Puter](https://docs.puter.com/) (`js.puter.com`) como backend opcional de login e armazenamento em nuvem — por isso alguns textos mencionam "nuvem Puter". Os links "Demo original" apontam para as versões hospedadas pelo projeto original (em inglês).
 
 <br>
@@ -64,6 +66,7 @@ Os apps usam o SDK do [Puter](https://docs.puter.com/) (`js.puter.com`) como bac
 <tr><td width="296" valign="middle" nowrap><a href="src/audio-studio/"><img src="src/audio-studio/icon-128.png" width="48" height="48" alt="" align="center"></a> &nbsp; <strong><a href="src/audio-studio/">Estúdio de Áudio</a></strong> <sub>(Audio Studio)</sub></td><td width="420" valign="middle">Adobe Audition, Sound Forge</td><td width="150" valign="middle" nowrap><a href="src/audio-studio/">Código</a>&nbsp;|&nbsp;<a href="https://as.puter.com/">Demo original</a></td></tr>
 <tr><td width="296" valign="middle" nowrap><a href="src/music-studio/"><img src="src/music-studio/icon-128.png" width="48" height="48" alt="" align="center"></a> &nbsp; <strong><a href="src/music-studio/">Estúdio de Música</a></strong> <sub>(Music Studio)</sub></td><td width="420" valign="middle">FL Studio, Ableton Live, Logic Pro</td><td width="150" valign="middle" nowrap><a href="src/music-studio/">Código</a>&nbsp;|&nbsp;<a href="https://ms.puter.com/">Demo original</a></td></tr>
 <tr><td width="296" valign="middle" nowrap><a href="src/3d/"><img src="src/3d/icon-128.png" width="48" height="48" alt="" align="center"></a> &nbsp; <strong><a href="src/3d/">Estúdio 3D</a></strong> <sub>(3D Studio)</sub></td><td width="420" valign="middle">Autodesk Maya, SketchUp</td><td width="150" valign="middle" nowrap><a href="src/3d/">Código</a>&nbsp;|&nbsp;<a href="https://3d.puter.com">Demo original</a></td></tr>
+<tr><td width="296" valign="middle" nowrap><a href="src/artcraft/"><img src="src/artcraft/icon-128.png" width="48" height="48" alt="" align="center"></a> &nbsp; <strong><a href="src/artcraft/">ArtCraft</a></strong> <sub>(ArtCraft · app de computador)</sub></td><td width="420" valign="middle">Krea, Freepik, Higgsfield, Adobe Firefly — IA para imagem, vídeo, áudio e 3D com composição em 2D/3D</td><td width="150" valign="middle" nowrap><a href="src/artcraft/">Código</a>&nbsp;|&nbsp;<a href="https://getartcraft.com/">Original</a></td></tr>
 </table>
 
 <br>
@@ -152,4 +155,4 @@ Os apps usam o SDK do [Puter](https://docs.puter.com/) (`js.puter.com`) como bac
 
 Este repositório, incluindo todo o seu conteúdo, subprojetos, módulos e componentes, é licenciado sob a [MIT](LICENSE), salvo indicação explícita em contrário. Bibliotecas de terceiros incluídas podem estar sujeitas às suas próprias licenças.
 
-Copyright do código original: veja [LICENSE](LICENSE) (HeyPuter). Tradução e adaptações em português: belchiorjuniorr2, também sob MIT.
+Copyright do código original: veja [LICENSE](LICENSE) (HeyPuter). O ArtCraft (`src/artcraft`) mantém a licença própria (MIT ou Apache-2.0, com [NOTICE](src/artcraft/NOTICE)) e o copyright da equipe do ArtCraft. Tradução e adaptações em português: belchiorjuniorr2, também sob MIT.

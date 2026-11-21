@@ -3,7 +3,7 @@
 set -u
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 mkdir -p "$ROOT/site" "$ROOT/site-logs"
-APPS=("$@"); [ ${#APPS[@]} -eq 0 ] && APPS=($(cd "$ROOT/src" && ls -d */ | tr -d /))
+APPS=("$@"); [ ${#APPS[@]} -eq 0 ] && APPS=($(cd "$ROOT/src" && ls -d */ | tr -d / | grep -vx artcraft))  # artcraft: app de computador (Tauri), não vai para o site
 for app in "${APPS[@]}"; do
   d="$ROOT/src/$app"; log="$ROOT/site-logs/$app.log"
   ( cd "$d" && (npm ci --no-audit --no-fund || npm install --no-audit --no-fund) && npm run build -- --base "/$app/" ) >"$log" 2>&1

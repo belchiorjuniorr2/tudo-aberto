@@ -1,0 +1,124 @@
+name: "Artcraft Windows Publish"
+
+on:
+  push:
+    branches:
+      - release
+      - artcraft-release
+      - artcraft-windows  # Additional branch for Windows testing
+
+# This workflow creates Windows builds.
+# On each push to the release branches it will create or update a GitHub release, build your app, and upload the artifacts to the release.
+
+# One release build per branch at a time. A run in progress is never cancelled, because it may
+# already have created or uploaded to the draft release. If more pushes arrive while one runs,
+# GitHub keeps only the newest as pending, so the next build is of the latest commit.
+concurrency:
+  group: windows-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish-artcraft-windows:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows builds
+          - platform: 'windows-latest'
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+    # Successful builds took 17-36 min (2026-04 to 2026-11); one hung run used the full 6-hour default.
+    timeout-minutes: 90
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v7
+
+      - name: install Rust stable
+        uses: step-security/dtolnay-rust-toolchain@8dd607977d06adf4ed49b190381e74c17a9dd25f # v1.0.0
+        with:
+          toolchain: stable
+
+      - name: install wreq dependencies
+        run: |
+          choco install cmake -y
+          choco install strawberryperl -y
+          choco install pkgconfiglite -y
+          choco install llvm -y
+          choco install nasm -y
+        shell: cmd
+
+      - name: setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+
+      - name: install frontend dependencies
+        shell: pwsh
+        run: |
+          # Navigate to the frontend directory to install dependencies
+          cd ./frontend
+
+          npm cache clean --force
+
+          echo "Installing all workspace dependencies..."
+          npm ci --ignore-scripts
+
+          echo "=== Version Information ==="
+          echo "Node version:"
+          node --version
+          echo "NPM version:"
+          npm --version
+
+          echo "=== Nx versions from lockfile ==="
+          npm list --depth=0 | findstr nx
+
+      - name: Pre-build frontend to avoid Tauri build issues
+        shell: pwsh
+        run: |
+          # Build the frontend app from the correct directory
+          cd ./frontend
+
+          # Increase Node.js memory limit for the build
+          $env:NODE_OPTIONS="--max-old-space-size=8192"
+
+          # Use npx to ensure we use the local nx version
+          echo "Building with npx nx..."
+          npx nx run artcraft:build
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
+
+          echo "Checking build output..."
+          dir apps/artcraft/dist/ | Select-Object -First 10
+
+          # Update Tauri config to skip the build (since we already built)
+          cd ${{ github.workspace }}/crates/desktop/artcraft
+          Copy-Item tauri.conf.json tauri.conf.json.bak
+
+          # Set beforeBuildCommand to empty using PowerShell
+          $config = Get-Content tauri.conf.json | ConvertFrom-Json
+          $config.build.beforeBuildCommand = ""
+          $config | ConvertTo-Json -Depth 10 | Set-Content tauri.conf.json
+
+      - name: build and publish
+        uses: step-security/tauri-action@dc662d498edbd35ec8ed564b45d44e955444d1bc # v1.0.0
+        env:
+          # NB(bt): This is needed by wreq. Hopefully it doesn't kill Tauri
+          RUSTFLAGS: "-C target-feature=+crt-static"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use the SQLx query cache for SQLite
+          SQLX_OFFLINE: true
+        with:
+          projectPath: ./crates/desktop/artcraft
+          tagName: artcraft-v__VERSION__ # the action automatically replaces __VERSION__ with the app version.
+          releaseName: "ArtCraft v__VERSION__"
+          releaseBody: "Production build of ArtCraft. See the assets below to download and install."
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}

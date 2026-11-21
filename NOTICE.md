@@ -24,6 +24,15 @@ WordCraft), sob licença dupla Apache-2.0 / MIT. Os arquivos de licença (e NOTI
 projeto são distribuídos junto com o app publicado (`/<app>/LICENSE-*`). Os nomes em português nos cards
 são apenas descritivos; os nomes originais aparecem entre parênteses.
 
+## ArtCraft (código-fonte em `src/artcraft`)
+
+`src/artcraft` é uma cópia do código-fonte de [storytold/artcraft](https://github.com/storytold/artcraft)
+(commit `de571bb2`, 20/11/2026), app de computador (Rust/Tauri) sob licença dupla MIT / Apache-2.0,
+Copyright (c) 2026 ArtCraft Team and the ArtCraft contributors. Os arquivos `LICENSE-MIT`, `LICENSE-APACHE` e
+`NOTICE` originais estão preservados sem alterações. A interface foi traduzida para pt-BR pelo mesmo método de
+dicionário dos outros apps; a lista de arquivos alterados está em `src/artcraft/TUDO-ABERTO.md`. O nome e os
+logotipos "ArtCraft" não são cobertos pela licença do código.
+
 ## Marcas
 
 "Puter" e "HeyPuter" são nomes do projeto original; "Storytold", "ArtCraft" e os nomes "*Craft" pertencem

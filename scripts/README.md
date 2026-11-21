@@ -24,5 +24,10 @@ O PhotoCraft precisa do pacote web completo (boot + app em partes), não só do 
 o site já fica em `target/web-package/photocraft-web-<versão>/`). Copie essa pasta para `site/photocraft/` e crie
 `site/photocraft/fonts/manifest.txt` vazio (fontes extras opcionais).
 
+## ArtCraft (app de computador)
+`src/artcraft` não entra no site (é Rust/Tauri) e o `build-site.sh` o ignora. Depois de editar `i18n/apps/artcraft.json`,
+rode `python3 scripts/artcraft-i18n.py`. Para conferir o build da interface: `cd src/artcraft/frontend && npm ci && cd apps/artcraft && npx vite build`.
+Veja `src/artcraft/README.md`.
+
 ## Teste de fumaça
 `cd scripts/smoke && npm i && node smoke.mjs [URL] [apps...]` abre cada app e acusa 404/5xx e erros de página.
